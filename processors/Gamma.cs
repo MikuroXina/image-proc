@@ -11,7 +11,7 @@ namespace Image0.processors {
     public Bitmap Process(Bitmap bmp, double p) => bmp.MapPixels((c) => {
       byte[] comps = { c.R, c.G, c.B };
       var processed = comps.Select(comp =>
-        (byte.MaxValue * Math.Pow(1.0 * comp / byte.MaxValue, 1 / p)).Clamp()
+        (byte.MaxValue * Math.Pow(1.0 * comp / byte.MaxValue, 1 / p)).SaturateAdd(0)
       ).ToArray();
       return Color.FromArgb(c.A, processed[0], processed[1], processed[2]);
     });

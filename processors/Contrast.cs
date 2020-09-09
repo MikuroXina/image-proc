@@ -7,7 +7,7 @@ namespace Image0.processors {
     public string Postfix => "_contrast";
 
     public Bitmap Process(Bitmap bmp, double p) => bmp.MapPixels((c) => {
-      byte R = (c.R * p).Clamp(), G = (c.G * p).Clamp(), B = (c.B * p).Clamp();
+      byte R = (c.R * p).SaturateAdd(0), G = (c.G * p).SaturateAdd(0), B = (c.B * p).SaturateAdd(0);
       return Color.FromArgb(c.A, R, G, B);
     });
   }

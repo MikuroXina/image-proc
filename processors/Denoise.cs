@@ -19,9 +19,9 @@ namespace Image0.processors {
               aroundPixels.Add(bmp.GetPixel(x + u - 1, y + v - 1));
             }
           }
-          var R = aroundPixels.Select(c => c.R).ToList().Median().Clamp();
-          var G = aroundPixels.Select(c => c.G).ToList().Median().Clamp();
-          var B = aroundPixels.Select(c => c.B).ToList().Median().Clamp();
+          var R = aroundPixels.Select(c => c.R).ToList().Median().SaturateAdd(0);
+          var G = aroundPixels.Select(c => c.G).ToList().Median().SaturateAdd(0);
+          var B = aroundPixels.Select(c => c.B).ToList().Median().SaturateAdd(0);
           cloned.SetPixel(
             x,
             y,

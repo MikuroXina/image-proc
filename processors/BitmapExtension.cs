@@ -4,8 +4,15 @@ using System.Drawing;
 
 namespace Image0.processors {
   internal static class BitmapExtension {
-    public static byte Clamp(this double value) =>
-      Math.Min(Math.Max((byte)Math.Round(value), (byte)0), byte.MaxValue);
+    public static byte SaturateAdd(this double a, double b) {
+      if (0 < a && byte.MaxValue - a <= b) {
+        return byte.MaxValue;
+      }
+      if (a < 0 && byte.MinValue - b <= a) {
+        return byte.MinValue;
+      }
+      return Math.Min(Math.Max((byte)Math.Round(a + b), byte.MinValue), byte.MaxValue);
+    }
 
     public static double DegToRad(this double value) => value / 180 * Math.PI;
 
@@ -49,7 +56,7 @@ namespace Image0.processors {
           cloned.SetPixel(
             x,
             y,
-            Color.FromArgb(pxOriginal.A, comps[0].Clamp(), comps[1].Clamp(), comps[2].Clamp())
+            Color.FromArgb(pxOriginal.A, comps[0].SaturateAdd(0), comps[1].SaturateAdd(0), comps[2].SaturateAdd(0))
           );
         }
       }
@@ -57,9 +64,9 @@ namespace Image0.processors {
     }
 
     public static Color WithBrightness(this Color c, int brightness) {
-      var R = Clamp(c.R + brightness);
-      var G = Clamp(c.G + brightness);
-      var B = Clamp(c.B + brightness);
+      var R = SaturateAdd(c.R, brightness);
+      var G = SaturateAdd(c.G, brightness);
+      var B = SaturateAdd(c.B, brightness);
       return Color.FromArgb(c.A, R, G, B);
     }
 
@@ -98,7 +105,7 @@ namespace Image0.processors {
         var a = saturation * Math.Min(luminance, 1 - luminance);
         var k = (n + hue / 30f) % 12;
         var normalizedColor = luminance - a * Math.Max(Math.Min(Math.Min(k - 3, 9 - k), 1), -1);
-        return (normalizedColor * byte.MaxValue).Clamp();
+        return (normalizedColor * byte.MaxValue).SaturateAdd(0);
       }
 
       return Color.FromArgb(alpha, Component(0), Component(8), Component(4));
