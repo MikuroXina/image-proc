@@ -5,10 +5,14 @@ using System.Drawing;
 namespace Image0.processors {
   internal static class BitmapExtension {
     public static byte SaturateAdd(this double a, double b) {
-      if (0 < a && byte.MaxValue - a <= b) {
+      if (byte.MaxValue - a <= b) {
+        // byte.MaxValue <= a + b
+        // オーバーフローしたとき
         return byte.MaxValue;
       }
-      if (a < 0 && byte.MinValue - b <= a) {
+      if (b <= byte.MinValue - a) {
+        // a + b <= byte.MinValue
+        // アンダーフローしたとき
         return byte.MinValue;
       }
       return Math.Min(Math.Max((byte)Math.Round(a + b), byte.MinValue), byte.MaxValue);
